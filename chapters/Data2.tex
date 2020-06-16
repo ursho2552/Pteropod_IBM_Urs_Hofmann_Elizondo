@@ -1,7 +1,9 @@
 
-The pteropod IBM is structured in two modules, a population module, and a physical module. The population module simulates a simplified life cycle of shelled pteropods parameterized using compiled published experimental data on pteropod life history, behavioral, physiological and morphological traits. The physical module computes the movement (i.e. advection and DVM) of the pteropods, and keeps track of the environmental conditions that the pteropods experience each day. The processes that we simulate in this model are visualized in figure \ref{fig:model_visualization}. In the following sections we present the physiological, life history, behavioral, and morphological traits considered in our IBM.
+The pteropod IBM is structured in two modules, a population module, and a physical module \citep[similar to ][]{Miller1998CalanusIBM}. The population module simulates a simplified life cycle of shelled pteropods parameterized using compiled published experimental data on temperate pteropod life history, behavioral, physiological and morphological traits. The physical module computes the movement (i.e. advection and DVM) of the pteropods, and keeps track of the environmental conditions that the pteropods experience each day.  We based our model on temperate pteropod species, since the highest biomass of shelled pteropods has been recorded in the temperate region \citep{Bednarsek2012PteropodDistribution}, and due to the decreased influence of seasonal changes in environmental factors \citep[e.g. temperature and food availability; ][]{Bednarsek2012PteropodDistribution,Wang2017Lifecycle} on pteropod growth and longevity compared to polar species \citep{Manno2017ReviewPteropodVulnerability}. The processes that we simulate in the coupled physical-biological model are visualized in figure \ref{fig:model_visualization}, and explained in the following sections.
 
 
+
+% Each pteropod is represented as a vector containing $24$ parameters (Tab. \ref{tab:parameters}) used to model the life history, physiological, morphological, and behavioral traits of pteropods, which are explained in the following sections.
 
 \begin{figure*}[tbh!]
     \centering
@@ -12,6 +14,101 @@ The pteropod IBM is structured in two modules, a population module, and a physic
     \caption{Visualization of the processes included in the pteropod IBM model. In the front are the four stages (egg, larvae, juvenile, and adult) included in the population module shown by the boxes. The duration of each stage is given in number of days after hatching. The spawning events are marked by the black downward arrows. Stages performing diurnal vertical migration (DVM) are shown with the red arrows, and stages affected by dissolution by the shells with gaps. The background represents the ocean circulation, and environmental conditions that the modeled pteropods experience.}
     \label{fig:model_visualization}
 \end{figure*}
+
+
+\subsection{Population module}
+
+We simplify the ten-stage life cycle of shelled pteropods \citep{Howes2014Lab,Thabet2015Lifestages} into four life-stage tracers. Specifically, the life cycle was divided into eggs (containing the 2-, 4-, 8-, 16-cell, blastula, gastrula, and trochophore stages), larvae (containing the veliger stage), juveniles (containing the non-reproductive juveniles), and reproductive adults \citep{Howes2014Lab,Thabet2015Lifestages}. The separation into four stages is based on specific physiological events within the life cycle of pteropods  (Fig \ref{fig:optimal_growth}). The transition from egg to larvae is based on the formation of the protoconch (larval shell) after five days of development \citep{Thabet2015Lifestages}, the transition from larvae to juveniles on the formation of the juvenile shell after 30 days of development, and the transition form juvenile to adult on the development of female gonads after 90 days of development \citep{lalli1989pelagic,Thabet2015Lifestages,Bednarsek2016CumulativeEffects}. 
+
+The life cycle of our simulated pteropods start with the release of eggs by reproductive adults, i.e. spawning. Eggs are released by adults as buoyant free-floating masses at the water surface \citep{Lalli1978Reproduction,Paranjape1968egg,Schalk1990SeasonalSpatial,Gannefors2005Overwintering,Comeau2010Predation,Manno2016EggsAcidification}. There is evidence for continuous low level spawning  throughout the year \citep{Wang2017Lifecycle,Thabet2015Lifestages}, but synchronized widespread spawning takes place in spring and autumn \citep{lalli1989pelagic,Thabet2015Lifestages,Wang2017Lifecycle}. The number of eggs released per reproductive pteropod adults has a high variability, which is likely linked to the environmental conditions that pteropods experience \citep{Manno2016EggsAcidification}. For instance, the number of eggs released range between $524$ and $10'051$ (mean $5'936$) per \textit{Limacina helicina} female in the arctic \citep{Lalli1978Reproduction}, and between $465$ and $708$ eggs (mean $565$) in the temperate region \citep{Paranjape1968egg}. Additionally, the number of eggs released by adults depends on the pteropod species, where the temperate to subpolar \textit{L. retroversa} females released  between $83$ and $650$ (mean $260$) eggs in a $20$ day period \citep{Lalli1978Reproduction}. In our model we use a conservative estimate of $565$ eggs per spawning event \citep{Paranjape1968egg}, which is within the ranges reported for \textit{L. retroversa} and \textit{L. helicina} in the arctic and temperate regions. During spawning a pause of roughly 20 days has been observed between separate spawning events \citep{Paranjape1968egg}. We model this pause using an Egg Release Readiness (ERR) index. The ERR index is set to a random number between zero and one at maturation, it increases by $\frac{1}{20}$ each day, and upon reaching $ERR \geq 1.0$ the eggs are released, and ERR is set to zero \citep[similar to the Clutch Readiness Fraction presented in ][]{Miller1998CalanusIBM}. 
+
+Right after spawning, the egg stage begins and lasts for five days. After the egg stage, the protoconch is developed and the larvae stage begins \citep{Thabet2015Lifestages}. During the larvae stage pteropods grow continuously, and develop parapodia (wings) after three weeks of development \citep{Thabet2015Lifestages}. After 30 days of development, the protoconch develops into a juvenile shell \citep{Thabet2015Lifestages}, and the juvenile stage begins. The juvenile stage lasts for 60 days, and it corresponds to the stage of rapid shell growth \citep{Thabet2015Lifestages}. Finally, the adult stage lasts for 90 day. In this stage, pteropods develop female gonads, release eggs \cite{lalli1989pelagic,Thabet2015Lifestages,Bednarsek2016CumulativeEffects}, and die short after spawning events \citep{Dadon1992Reproduction,Gannefors2005Overwintering,Hunt2008TopPredators,Howes2014Lab}. 
+
+
+
+The pteropods in our IBM have a longevity of roughly six months as described for the temperate \textit{L. retroversa} individuals under laboratory conditions \citep{Thabet2015Lifestages}. The six month longevity under laboratory conditions has also been observed in the field on the population level for \textit{L. helicina} between spring and summer in the temperate North Pacific \citep{Wang2017Lifecycle}. The development of shelled pteropods under laboratory conditions is comparable to field conditions between spring and summer, where phytoplankton spring blooms and summer production allow the development from egg to reproductive adult within six months \citep{Wang2017Lifecycle}. However, the development of pteropods is linked to their size and thus growth rate. Between autumn and spring, the duration of the larvae stage is extended as a result of overwintering, where pteropod larvae undergo minimal to low growth \citep{Wang2017Lifecycle}, and metamorphose to the juvenile stage in spring \citep{Hunt2008TopPredators}. This delay in growth and development extends the longevity of shelled pteropods to roughly eleven months \citep{Wang2017Lifecycle}. Thus, in addition to the distinction of four stages, we approximate the growth rates of pteropods as a function of time. We use the length-frequency analysis by \cite{Wang2017Lifecycle}  of the three-year cohort analysis of the \textit{L. helicina} populations in the temperate North Pacific to parameterize the growth rates of our pteropods. This parameterization does not include an explicit food or temperature limitation, and  found a small correlation between daily growth rates and temperature and phytoplankton biomass \citep{Wang2017Lifecycle}. However, recent work has shown that pteropods can continue growing and overcome periods of food scarcity by using their stored lipids \citep{Maas2020Lipids}. 
+
+The growth function assumes two generations per year, a spring generation, and an overwintering generation \citep{Wang2017Lifecycle}. The spring and overwintering generations have a longevity of roughly six months, and eleven months, respectively \citep{Wang2017Lifecycle}. The overwintering generation is characterized by a period of minimal or stagnant growth between November and January \citep{Wang2017Lifecycle}. The growth function describes the length or shell length ($L$) of pteropods as a function of time using measured length-frequency observations and a variation of the \textit{von Bertalanffy growth function} \citep[VBGF; ][]{Bertalanffy1938}, which considers seasonal changes ($S$) in growth rates \citep[Fig. \ref{fig:optimal_growth};][]{Wang2017Lifecycle}. The formula used is as follows \citep{Somers1988,Wang2017Lifecycle}:
+\begin{eqnarray}
+L(t) & = & L_{\infty} \cdot (1 - e^{(K(t-t_0) + S(t) - S(t0))}), \\
+S(t) & = & \frac{CK}{2\pi} \cdot sin(2\pi (t-t_s)), \\
+t_s + 0.5 & = & WP,
+\end{eqnarray}
+\noindent
+where $L(t)$ denotes the length at age $t$, $L_{\infty}$ the maximum length, $K$ how fast $L_{\infty}$ is reached, $C$ the amplitude of growth oscillations, $t_0$ the age at $L=0$, $t_s$ the time between $t=0$ and the onset of oscillations in growth, and $WP$ the fraction of the year where growth is at its slowest. For the spring (overwintering) generation the values of $WP=0.1\,(0.9)$ and $C=0.4\,(1)$ were taken directly from \citep{Wang2017Lifecycle}. The values for $K=5.07\,(4.4)\, s^{-1}$ and $L_{\infty} = 4.53\,(5.31)\, mm$ are average values reported in \cite{Wang2017Lifecycle} for the spring (overwintering) generations.
+
+\begin{figure*}[tbh!]
+    \centering
+    
+        \includegraphics[scale=0.5]{images/Optimal_growth.png}
+       
+    
+    \caption{Pteropod length growth (black line) calculated based on the growth rates described in \cite{Wang2017Lifecycle}. The x-axis denotes the days since hatching. The y-axis denotes the length of the pteropod in mm. The red vertical lines separate the growth rate into the life stages, egg, larvae, juvenile, and adult. The red dots mark the hatching at day 0, and the development of key traits such as the protoconch (larval shell; day 5), parapodia (wings; day 21), shell (day 30), and maturity (day 90).}
+    \label{fig:optimal_growth}
+\end{figure*}
+
+
+% In the previous section \ref{sec:life_history_traits}, we presented the duration of the four stages used in our IBM. The combination of the stage duration with the length growth presented in section \ref{sec:physiological_traits} allows us to define the size required for each individual to develop into the next stage. Under optimal or spring conditions, the egg, larvae, and juvenile stages last until they reach $0.35\,mm$, $1.65\, mm$, and $3.56\, mm$, respectively (Fig. \ref{fig:optimal_growth}). 
+
+% The stages of our IBM were defined based on the developmental timings of specific traits, such as the protoconch, and juvenile and adult shell (section \ref{sec:life_history_traits}). Both types of shells are susceptible to acidification with differing sensitivity \citep{Bednarsek2017ApplicationPteropodShell,Thabet2015Lifestages}. Such a definition allows us to characterize the calcification and dissolution rates for each pteropod at different stages of their life. To this end, we defined the calcification and dissolution rates as a function of the aragonite saturation state ($\Omega_{arag}$), as well as their shell length, were dissolution and calcification starts at the larvae stage.
+
+
+% \textbf{Tons of equations here}
+
+
+
+
+% the duration of the larvae stage is linked to the environmental conditions, such as temperature and food availability \citep{Paranjape1968egg,Hunt2008TopPredators,Gannefors2005Overwintering}.
+
+
+
+
+
+% However, since shelled pteropods have shown a life stage specific sensitivity to changes in environmental condition \citep{Thabet2015Lifestages,Bednarsek2016CumulativeEffects}
+
+
+
+% A longevity of six months
+% Shelled pteropods have shown a life stage specific sensitivity to changes in environmental condition \citep{Thabet2015Lifestages,Bednarsek2016CumulativeEffects}. Thus, the shell growth rate described above was divided into four life stages in our IBM, i.e. into the egg, larvae, juvenile, and adult stage.
+
+
+
+% The physiological traits simulated in the population model are the longevity, and growth rate. We use the longevity of temperate pteropod species as a basis for modeling the longevity of pteropods, due to the decreased influence of seasonal changes in environmental factors \citep[e.g. temperature and food availability; ][]{Bednarsek2012PteropodDistribution,Wang2017Lifecycle} on pteropod growth and longevity compared to polar species \citep{Manno2017ReviewPteropodVulnerability}. Under laboratory conditions the longevity of temperate \textit{Limacina retroversa} individuals was observed to be around six months \citep{Thabet2015Lifestages}. A similarly long longevity of six months is observed on the population level for \textit{L. helicina} during optimal growth conditions in spring in the temperate North Pacific \citep{Wang2017Lifecycle}. Thus, the pteropods in our IBM have a basis longevity of six months.
+
+% The growth rates of shelled pteropods are taken from the three-year cohort analysis of the \textit{L. helicina} populations in the temperate North Pacific \citep{Wang2017Lifecycle}. \cite{Wang2017Lifecycle} provide the shell length ($L$) of pteropods as a function of time using measured length-frequency observations and a variation of the \textit{von Bertalanffy growth function} \citep[VBGF; ][]{Bertalanffy1938}, which considers seasonal changes ($S$) in growth rates. The formula used is as follows \citep{Somers1988,Wang2017Lifecycle}:
+% \begin{eqnarray}
+% L(t) & = & L_{\infty} \cdot (1 - e^{(K(t-t_0) + S(t) - S(t0))}), \\
+% S(t) & = & \frac{CK}{2\pi} \cdot sin(2\pi (t-t_s)), \\
+% t_s + 0.5 & = & WP,
+% \end{eqnarray}
+% \noindent
+% where $L(t)$ denotes the length at age $t$, $L_{\infty}$ the maximum length, $K$ how fast $L_{\infty}$ is reached, $C$ the amplitude of growth oscillations, $t_0$ the age at $L=0$, $t_s$ the time between $t=0$ and the onset of oscillations in growth, and $WP$ the fraction of the year where growth is at its slowest. As was the case for the longevity, we use the growth function for the spring population as the basis growth function for our IBM (Fig. \ref{fig:optimal_growth}), where the values for $WP=0.1$ and $C=0.4$ where taken from \cite{Wang2017Lifecycle}. The values for $K=5.07\, s^{-1}$ and $L_{\infty} = 4.53\, mm$ are average values reported in \cite{Wang2017Lifecycle}.
+
+
+
+% The duration of this stage is linked to the environmental conditions, such as temperature and food availability \citep{Paranjape1968egg,Hunt2008TopPredators,Gannefors2005Overwintering}, since it can undergo minimal to low growth in winter \citep[i.e. overwinter; ][]{Wang2017Lifecycle} and metamorphose to the juvenile stage in spring \citep{Hunt2008TopPredators}.
+
+
+
+
+
+
+% Shelled pteropods have shown a  life stage specific sensitivity to changes in environmental condition \citep{Thabet2015Lifestages,Bednarsek2016CumulativeEffects}. Thus, the shell growth rate described above was divided into four life stages in our IBM, i.e. into the egg, larvae, juvenile, and adult stage. These four stages aggregate the ten-stage life cycle of the temperate pteropod \textit{Limacina retroversa} \citep{Howes2014Lab,Thabet2015Lifestages}. The transition between the stages is defined based on the timings of key traits such as the development of wings (parapodia), larval shell (protoconch), juvenile and adult shell, and maturity, since the aim of this study is to characterize the effects of acidification throughout the life of shelled pteropods that perform DVM. Thus, in combination with the shell growth rate described in the section \ref{sec:physiological_traits}, we define the size a pteropod needs to reach to transition between one stage to the next (Fig. \ref{fig:optimal_growth}).
+
+
+
+
+
+
+
+\begin{itemize}
+    \item Life cycle (life stages and reproduction)
+    \item growth rate
+    \item calcification and shell size
+    \item DVM
+\end{itemize}
+
+\textbf{Old version:}
 
 \subsection{Physiological traits} \label{sec:physiological_traits}
 The physiological traits simulated in the population model are the longevity, and growth rate. We use the longevity of temperate pteropod species as a basis for modeling the longevity of pteropods, due to the decreased influence of seasonal changes in environmental factors \citep[e.g. temperature and food availability; ][]{Bednarsek2012PteropodDistribution,Wang2017Lifecycle} on pteropod growth and longevity compared to polar species \citep{Manno2017ReviewPteropodVulnerability}. Under laboratory conditions the longevity of temperate \textit{Limacina retroversa} individuals was observed to be around six months \citep{Thabet2015Lifestages}. A similarly long longevity of six months is observed on the population level for \textit{L. helicina} during optimal growth conditions in spring in the temperate North Pacific \citep{Wang2017Lifecycle}. Thus, the pteropods in our IBM have a basis longevity of six months.
@@ -26,15 +123,15 @@ t_s + 0.5 & = & WP,
 where $L(t)$ denotes the length at age $t$, $L_{\infty}$ the maximum length, $K$ how fast $L_{\infty}$ is reached, $C$ the amplitude of growth oscillations, $t_0$ the age at $L=0$, $t_s$ the time between $t=0$ and the onset of oscillations in growth, and $WP$ the fraction of the year where growth is at its slowest. As was the case for the longevity, we use the growth function for the spring population as the basis growth function for our IBM (Fig. \ref{fig:optimal_growth}), where the values for $WP=0.1$ and $C=0.4$ where taken from \cite{Wang2017Lifecycle}. The values for $K=5.07\, s^{-1}$ and $L_{\infty} = 4.53\, mm$ are average values reported in \cite{Wang2017Lifecycle}.
 
 
-\begin{figure*}[tbh!]
-    \centering
+% \begin{figure*}[tbh!]
+%     \centering
     
-        \includegraphics[scale=0.5]{images/Optimal_growth.png}
+%         \includegraphics[scale=0.5]{images/Optimal_growth.png}
        
     
-    \caption{Pteropod length growth (black line) calculated based on the growth rates described in \cite{Wang2017Lifecycle}. The x-axis denotes the days since hatching. The y-axis denotes the length of the pteropod in mm. The red vertical lines separate the growth rate into the life stages, egg, larvae, juvenile, and adult. The red dots mark the hatching at day 0, and the development of key traits such as the protoconch (larval shell; day 5), parapodia (wings; day 21), shell (day 30), and maturity (day 90).}
-    \label{fig:optimal_growth}
-\end{figure*}
+%     \caption{Pteropod length growth (black line) calculated based on the growth rates described in \cite{Wang2017Lifecycle}. The x-axis denotes the days since hatching. The y-axis denotes the length of the pteropod in mm. The red vertical lines separate the growth rate into the life stages, egg, larvae, juvenile, and adult. The red dots mark the hatching at day 0, and the development of key traits such as the protoconch (larval shell; day 5), parapodia (wings; day 21), shell (day 30), and maturity (day 90).}
+%     \label{fig:optimal_growth}
+% \end{figure*}
 
 
 \subsection{Life history traits}\label{sec:life_history_traits}
@@ -45,10 +142,11 @@ Shelled pteropods have shown a  life stage specific sensitivity to changes in en
 The egg stage lasts for five days. The egg stage summarizes all stages between spawning up to (but not including) the development of the protoconch \citep{Thabet2015Lifestages}. The larvae stage lasts for 25 days. This stage starts with the development of the protoconch, and includes the development of parapodia after roughly three weeks from spawning \citep{Thabet2015Lifestages}. The juvenile stage lasts for 60 days. This stage corresponds to the stage of rapid shell growth \citep{Thabet2015Lifestages}. Finally, the adult stage lasts for 90 days, and corresponds to the reproductive stage where pteropods develop female gonads \cite{lalli1989pelagic,Thabet2015Lifestages,Bednarsek2016CumulativeEffects}.
 
 
-The eggs of epipelagic shelled pteropod species are spawned as buoyant free-floating masses at the surface \citep{Lalli1978Reproduction,Paranjape1968egg,Schalk1990SeasonalSpatial,Gannefors2005Overwintering,Comeau2010Predation,Manno2016EggsAcidification}. While there is evidence for continuous low level spawning  throughout the year \citep{Wang2017Lifecycle,Thabet2015Lifestages}, pteropod  adults in a population have been found to have phases of synchronized widespread spawningm \citep[e.g. in spring and autumn][]{lalli1989pelagic,Thabet2015Lifestages,Wang2017Lifecycle}. During main spawning phases a pause of roughly 20 days has been observed between spawning of eggs \citep{Paranjape1968egg}. We modeled the time between spawning by defining a Egg Release Readiness Index (ERR), which is set to a random number between zero and one at maturation, increases by $\frac{1}{20}$ each day, and upon reaching $ERR \geq 1.0$ the eggs are released, and ERR is set to zero \citep[similar to the Clutch Readines Fraction presented in ][]{Miller1998CalanusIBM}.
+% The eggs of epipelagic shelled pteropod species are spawned as buoyant free-floating masses at the surface \citep{Lalli1978Reproduction,Paranjape1968egg,Schalk1990SeasonalSpatial,Gannefors2005Overwintering,Comeau2010Predation,Manno2016EggsAcidification}. While there is evidence for continuous low level spawning  throughout the year \citep{Wang2017Lifecycle,Thabet2015Lifestages}, pteropod  adults in a population have been found to have phases of synchronized widespread spawningm \citep[e.g. in spring and autumn][]{lalli1989pelagic,Thabet2015Lifestages,Wang2017Lifecycle}. During main spawning phases a pause of roughly 20 days has been observed between spawning of eggs \citep{Paranjape1968egg}. We modeled the time between spawning by defining a Egg Release Readiness Index (ERR), which is set to a random number between zero and one at maturation, increases by $\frac{1}{20}$ each day, and upon reaching $ERR \geq 1.0$ the eggs are released, and ERR is set to zero \citep[similar to the Clutch Readines Fraction presented in ][]{Miller1998CalanusIBM}.
 % After the main spawning events adult pteropods have been observed to die \citep{Dadon1992Reproduction,Gannefors2005Overwintering,Hunt2008TopPredators,Howes2014Lab}.
 % Resting stages
 
+% The final life history trait we model in our IBM are the number of eggs produced by each individual. Upon reaching maturity, pteropod adults begin spawning eggs \citep{lalli1989pelagic,Gannefors2005Overwintering}. The number of eggs produced per reproductive pteropod adults has a high variability, ranging between $524$ and $10'051$ eggs (mean $5'936$) per \textit{L. helicina} female, and between $83$ and $650$ eggs (mean $260$) per \textit{L. retroversa} in a $20$ day period \citep{Lalli1978Reproduction}. This high variability in number of eggs is likely linked to the environmental conditions that pteropods experience \citep{Manno2016EggsAcidification}, since for instance reproductive \textit{L. helicina} adults produce between $465$ and $708$ eggs (mean $565$) over the 20 day period \citep{Paranjape1968egg}. As was the case for the physiological traits (section \ref{sec:physiological_traits}) we use the estimates for the warmer regions for our IBM, i.e. reproductive adults spawn $565$ eggs.
 
 
 \subsection{Morphological traits}
@@ -60,7 +158,7 @@ The stages of our IBM were defined based on the developmental timings of specifi
 
 \textbf{Tons of equations here}
 
-The final morphological trait we model in our IBM are the number of eggs produced by each individual. Upon reaching maturity, pteropod adults begin spawning eggs \citep{lalli1989pelagic,Gannefors2005Overwintering}. The number of eggs produced per reproductive pteropod adults has a high variability, ranging between $524$ and $10'051$ eggs (mean $5'936$) per \textit{L. helicina} female, and between $83$ and $650$ eggs (mean $260$) per \textit{L. retroversa} in a $20$ day period \citep{Lalli1978Reproduction}. This high variability in number of eggs is likely linked to the environmental conditions that pteropods experience \citep{Manno2016EggsAcidification}, since for instance reproductive \textit{L. helicina} adults produce between $465$ and $708$ eggs (mean $565$) over the 20 day period \citep{Paranjape1968egg}. As was the case for the physiological traits (section \ref{sec:physiological_traits}) we use the estimates for the warmer regions for our IBM, i.e. reproductive adults spawn $565$ eggs.
+% The final morphological trait we model in our IBM are the number of eggs produced by each individual. Upon reaching maturity, pteropod adults begin spawning eggs \citep{lalli1989pelagic,Gannefors2005Overwintering}. The number of eggs produced per reproductive pteropod adults has a high variability, ranging between $524$ and $10'051$ eggs (mean $5'936$) per \textit{L. helicina} female, and between $83$ and $650$ eggs (mean $260$) per \textit{L. retroversa} in a $20$ day period \citep{Lalli1978Reproduction}. This high variability in number of eggs is likely linked to the environmental conditions that pteropods experience \citep{Manno2016EggsAcidification}, since for instance reproductive \textit{L. helicina} adults produce between $465$ and $708$ eggs (mean $565$) over the 20 day period \citep{Paranjape1968egg}. As was the case for the physiological traits (section \ref{sec:physiological_traits}) we use the estimates for the warmer regions for our IBM, i.e. reproductive adults spawn $565$ eggs.
 
 
 
@@ -70,6 +168,41 @@ The final morphological trait we model in our IBM are the number of eggs produce
 
 \textbf{Paragraph on DVM, i.e. maximum depth, and timing}
 
+
+
+
+
+
+
+\begin{table}[tbh!]
+\caption{Summary of parameters used to model the physiological, life history, behavioral, and morphological traits of pteropods.}
+\label{tab:parameters}
+\begin{tabular}{l l}
+\hline
+\textbf{Parameter name}                          & \textbf{Parameter description}                                    \\ \hline
+ID                                               & Unique identifier for each individual                    \\ 
+Parent ID                                        & Unique identifier of parent individual                   \\ 
+Parent shell size                                & Shell length of the parent pteropod at spawning                      \\ 
+Generation                                       & Integer representation of the generation of individuals  \\ 
+Life stage                                       & Integer representation of the life stage of the pteropod \\ 
+Survive                                          & Boolean representation of survival                                 \\ 
+Days since maturity                              & Number of days passed since maturity was reached                   \\ 
+Days of growth                                   & Number of days the pteropod has grown                    \\ 
+Egg release readiness (ERR)                      & \begin{tabular}[c]{@{}l@{}}Index between zero and one, which indicates\\ whether adult pteropods are ready to release \\ eggs ($ERR \geq 1.0$) or not ($ERR < 1.0$). \end{tabular}                                                         \\ 
+Spawned                                          & \begin{tabular}[c]{@{}l@{}}Boolean representation of whether an adult \\ pteropod spawned eggs. \end{tabular}                                                        \\ 
+Departure from depth                             & Time at which a pteropod swims towards the surface.                                                         \\ 
+Departure from surface                           & Time at which a pteropod swims downwards.                                                                  \\ 
+Up speed                                         & Upward swimming speed of a pteropod.                                                                  \\ 
+Down speed                                       & Downward swimming speed of a pteropod                                                             \\ 
+Maximum depth                                    & Maximum depth a pteropod can reach.                                                                  \\ 
+Productivity                                     & \begin{tabular}[c]{@{}l@{}}Total phytoplankton productivity experienced \\ by a pteropod. \end{tabular}                                                                  \\ 
+Sum of aragonite saturation state                & \begin{tabular}[c]{@{}l@{}}Sum of aragonite saturation state experienced \\ by a pteropod each day. \end{tabular}                                                                  \\ 
+Number of intermittent steps                     &  Number of time steps used in the physical module.                                                                 \\ 
+Depth of maximum chlorophyll a concentration     &  \begin{tabular}[c]{@{}l@{}}Depth at which a pteropod experienced \\ the maximum chlorophyll a concentration. \end{tabular}                                                                 \\ 
+Longitude of maximum chlorophyll a concentration &  \begin{tabular}[c]{@{}l@{}}Longitude at which a pteropod experienced \\ the maximum chlorophyll a concentration. \end{tabular}                                                                  \\ 
+Latitude of maximum chlorophyll a concentration  &   \begin{tabular}[c]{@{}l@{}}Latitude at which a pteropod experienced \\ the maximum chlorophyll a concentration. \end{tabular}                                                                \\ \hline
+\end{tabular}
+\end{table}
 
 
 
