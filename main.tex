@@ -25,14 +25,15 @@
 % \documentclass[preprint,12pt]{elsarticle}
 
 %% Use the option review to obtain double line spacing
-%% \documentclass[preprint,review,12pt]{elsarticle}
+\documentclass[preprint,review,12pt]{elsarticle}
 
 %% Use the options 1p,twocolumn; 3p; 3p,twocolumn; 5p; or 5p,twocolumn
 %% for a journal layout:
 % \documentclass[final,1p,times]{elsarticle}
-%% \documentclass[final,1p,times,twocolumn]{elsarticle}
-\documentclass[final,3p,times]{elsarticle}
-%% \documentclass[final,3p,times,twocolumn]{elsarticle}
+% \documentclass[final,1p,times,twocolumn]{elsarticle}
+% \documentclass[final,3p,times]{elsarticle}
+
+% \documentclass[final,3p,times,twocolumn]{elsarticle}
 %%\documentclass[final,5p,times]{elsarticle}
 %  \documentclass[final,5p,times,twocolumn]{elsarticle}
 
@@ -40,7 +41,7 @@
 %% use the graphics package for simple commands
 %% \usepackage{graphics}
 %% or use the graphicx package for more complicated commands
- \usepackage{graphicx}
+\usepackage{graphicx}
 %% or use the epsfig package if you prefer to use the old commands
 %% \usepackage{epsfig}
 
@@ -56,6 +57,8 @@
 \usepackage{subcaption}
 \usepackage{caption}
 \usepackage{longtable}
+\usepackage{tabulary}
+\usepackage{lineno}
 %\usepackage{titlesec}
 \captionsetup[figure]{labelfont={bf},labelformat={default},labelsep=period,name={Fig.}}
 \captionsetup[table]{labelfont={bf},labelformat={default},labelsep=period,name={Tab.}}
@@ -98,10 +101,10 @@
  \biboptions{authoryear}
 
 
-\journal{TBD}
+\journal{Ecological Modelling}
 
 \begin{document}
-
+\linenumbers
 \begin{frontmatter}
 
 %% Title, authors and addresses
@@ -136,9 +139,9 @@
 \ead{urs.hofmann@usys.ethz.ch}
 \author[fn2]{Meike Vogt \fnref{fn3}}
 \ead{meike.vogt@env.ethz.ch}
-\author[fn2]{Matthias M\"{u}nnich \fnref{fn4}}
+\author[fn2]{Matthias M\"{u}nnich\fnref{fn4}}
 \ead{munnich@env.ethz.ch}
-\author[fn2]{Nicolas Gruber \fnref{fn5}}
+\author[fn2]{Nicolas Gruber\fnref{fn5}}
 \ead{nicolas.gruber@env.ethz.ch}
 
 \address[fn2]{Environmental Physics Group, Institute of Biogeochemistry and Pollutant Dynamics, ETH Z\"{u}rich, Universit\"{a}strasse 16, 8092 Z\"{u}rich, Switzerland}
@@ -176,8 +179,8 @@ Pteropods \sep Individual-based modelling  \sep Ocean acidification \sep Califor
 
 
 
-\section{Pteropod individual-based model setup}
-\input{chapters/Data2.tex}
+\section{Model description}
+\input{chapters/Data.tex}
 
 
 \section{Results}
